@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class GameRoomController {
     private final GameRoomService gameRoomService;
 
+    // GET /rooms/{roomId}/next-round?round={round}
     @GetMapping("/rooms/{roomId}/next-round")
     public ResponseEntity<RoundAnswer> getNextRoundAnswer(
             @PathVariable String roomId,
