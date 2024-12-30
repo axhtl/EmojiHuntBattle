@@ -25,10 +25,16 @@ public class ConnectController {
         }
 
         // 새로운 플레이어 생성 (PlayerId는 자동으로 생성됨)
-        Player newPlayer = Player.createNewPlayer(); // PlayerId는 자동 생성됨
+        Player newPlayer = Player.createNewPlayer(); // Player 생성
+
+        // 방에 플레이어 추가 전에, 게임룸을 설정
+        newPlayer.setGameRoom(gameRoom); // 새로운 플레이어의 gameRoom 설정
 
         // 방에 플레이어 추가
-        gameRoomService.addPlayerToRoom(gameRoom, newPlayer);
+        gameRoom.addPlayer(newPlayer);
+
+        // gameRoom을 저장하여 DB에 반영 (추가)
+        gameRoomService.saveGameRoom(gameRoom);
 
         return gameRoom;
     }
