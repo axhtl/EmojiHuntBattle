@@ -11,8 +11,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GameRoomService {
 
-    // 방 목록을 관리하는 리스트 (현재 예시로 메모리 내에서 관리)
-    private List<GameRoom> rooms = new ArrayList<>();
+    private List<GameRoom> rooms = new ArrayList<>();  // 방을 저장할 리스트
 
     public GameRoom findEmptyRoom() {
         // 빈 방을 찾는 로직
@@ -32,6 +31,6 @@ public class GameRoomService {
     }
 
     public void addPlayerToRoom(GameRoom room, String playerId) {
-        room.addPlayer(playerId); // 방에 플레이어 추가
+        room.addPlayer(playerId); // 방에 playerId 추가
     }
 }
