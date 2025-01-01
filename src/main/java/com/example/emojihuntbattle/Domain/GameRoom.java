@@ -23,6 +23,12 @@ public class GameRoom {
 
     private boolean roomReady = false; // 방 준비 여부
 
+    private Integer round1Answer;
+    private Integer round2Answer;
+    private Integer round3Answer;
+    private Integer round4Answer;
+    private Integer round5Answer;
+
     // 플레이어 추가
     public void addPlayer(Player player) {
         players.add(player);
@@ -45,5 +51,22 @@ public class GameRoom {
     // roomReady 상태 업데이트
     public void setRoomReady(boolean roomReady) {
         this.roomReady = roomReady;
+    }
+
+    // 정답 저장 메서드
+    public void setRound1Answer(Integer answer) {
+        this.round1Answer = answer;
+    }
+    public void setRound2Answer(Integer answer) {
+        this.round2Answer = answer;
+    }
+    public void setRound3Answer(Integer answer) {
+        this.round3Answer = answer;
+    }
+    public void setRound4Answer(Integer answer) {
+        this.round4Answer = answer;
+    }
+    public void setRound5Answer(Integer answer) {
+        this.round5Answer = answer;
     }
 }

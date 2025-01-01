@@ -2,7 +2,7 @@ package com.example.emojihuntbattle.Controller;
 
 import com.example.emojihuntbattle.Domain.GameRoom;
 import com.example.emojihuntbattle.Domain.Player;
-import com.example.emojihuntbattle.Service.GameRoomService;
+import com.example.emojihuntbattle.Service.ConnectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,17 +11,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ConnectController {
 
-    private final GameRoomService gameRoomService;
+    private final ConnectService connectService;
 
     @PostMapping("/connect")
     public GameRoom connectPlayer() {
 
         // 빈 방 찾기
-        GameRoom gameRoom = gameRoomService.findEmptyRoom();
+        GameRoom gameRoom = connectService.findEmptyRoom();
 
         // 빈 방이 없으면 새 방 생성
         if (gameRoom == null) {
-            gameRoom = gameRoomService.createNewRoom();
+            gameRoom = connectService.createNewRoom();
         }
 
         // 새로운 플레이어 생성 (PlayerId는 자동으로 생성됨)
@@ -34,7 +34,7 @@ public class ConnectController {
         gameRoom.addPlayer(newPlayer);
 
         // gameRoom을 저장하여 DB에 반영 (추가)
-        gameRoomService.saveGameRoom(gameRoom);
+        connectService.saveGameRoom(gameRoom);
 
         return gameRoom;
     }
