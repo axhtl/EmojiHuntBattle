@@ -2,6 +2,7 @@ package com.example.emojihuntbattle.Service;
 
 import com.example.emojihuntbattle.Domain.GameRoom;
 import com.example.emojihuntbattle.Repository.GameRoomRepository;
+import com.example.emojihuntbattle.WebSocket.GameWebSocketHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +16,17 @@ import java.util.Random;
 public class GameRoomService {
 
     private final GameRoomRepository gameRoomRepository;
+    private final GameWebSocketHandler gameWebSocketHandler;
 //    private final GameRoomService gameRoomService;
+
+    // 방 준비 상태 변경 시 브로드캐스트 메시지 전송
+    public void handleRoomReady(GameRoom gameRoom) {
+        // 방이 준비된 상태일 때만 브로드캐스트
+        if (gameRoom.isRoomReady()) {
+            String message = "Room " + gameRoom.getRoomId() + " is ready! All players can start the game.";
+            gameWebSocketHandler.broadcastRoomReady(message); // 메시지 브로드캐스트
+        }
+    }
 
     public Map<String, Object> getNextRoundInfo(Long roomId, int round) {
         // 방 존재 여부 확인

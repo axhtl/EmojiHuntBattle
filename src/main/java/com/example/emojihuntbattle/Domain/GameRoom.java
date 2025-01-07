@@ -1,5 +1,6 @@
 package com.example.emojihuntbattle.Domain;
 
+import com.example.emojihuntbattle.WebSocket.GameWebSocketHandler;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -22,6 +23,9 @@ public class GameRoom {
     private List<Player> players = new ArrayList<>(); // 플레이어 목록
 
     private boolean roomReady = false; // 방 준비 여부
+
+    @Transient
+    private GameWebSocketHandler webSocketHandler; // WebSocket 메시지를 전송하는 핸들러
 
     private Integer round1Answer;
     private Integer round2Answer;
@@ -51,6 +55,17 @@ public class GameRoom {
     // roomReady 상태 업데이트
     public void setRoomReady(boolean roomReady) {
         this.roomReady = roomReady;
+
+        // 방 준비 완료 시 WebSocket 메시지 전송
+        if (roomReady && webSocketHandler != null) {
+            // 준비 완료 메시지 생성
+            String message = "Room " + this.roomId + " is ready! All players can start the game.";
+            webSocketHandler.broadcastRoomReady(message); // 생성한 메시지를 브로드캐스트
+        }
+    }
+
+    public boolean isRoomReady() {
+        return roomReady;
     }
 
     // 정답 저장 메서드

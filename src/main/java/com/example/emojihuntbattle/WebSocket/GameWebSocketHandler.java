@@ -1,5 +1,6 @@
 package com.example.emojihuntbattle.WebSocket;
 
+import com.example.emojihuntbattle.Domain.GameRoom;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -37,5 +38,16 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         sessions.remove(session);
         System.out.println("Connection closed: " + session.getId());
+    }
+
+    // 방 준비 완료 시 모든 클라이언트에 메시지 브로드캐스트
+    public void broadcastRoomReady(String message) {
+        for (WebSocketSession session : sessions) {
+            try {
+                session.sendMessage(new org.springframework.web.socket.TextMessage(message));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

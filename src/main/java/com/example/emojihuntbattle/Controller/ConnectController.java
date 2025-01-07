@@ -3,6 +3,7 @@ package com.example.emojihuntbattle.Controller;
 import com.example.emojihuntbattle.Domain.GameRoom;
 import com.example.emojihuntbattle.Domain.Player;
 import com.example.emojihuntbattle.Service.ConnectService;
+import com.example.emojihuntbattle.Service.GameRoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ConnectController {
 
     private final ConnectService connectService;
+    private final GameRoomService gameRoomService;
 
     @PostMapping("/connect")
     public GameRoom connectPlayer() {
@@ -35,6 +37,9 @@ public class ConnectController {
 
         // gameRoom을 저장하여 DB에 반영 (추가)
         connectService.saveGameRoom(gameRoom);
+
+        // 방 준비 상태에 맞게 브로드캐스트 메시지 처리
+        gameRoomService.handleRoomReady(gameRoom);
 
         return gameRoom;
     }
