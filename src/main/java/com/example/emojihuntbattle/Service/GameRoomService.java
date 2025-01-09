@@ -17,13 +17,48 @@ public class GameRoomService {
 
     private final GameRoomRepository gameRoomRepository;
     private final GameWebSocketHandler gameWebSocketHandler;
-//    private final GameRoomService gameRoomService;
 
     // 방 준비 상태 변경 시 브로드캐스트 메시지 전송
     public void handleRoomReady(GameRoom gameRoom) {
         // 방이 준비된 상태일 때만 브로드캐스트
         if (gameRoom.isRoomReady()) {
             String message = "Room " + gameRoom.getRoomId() + " is ready! All players can start the game.";
+            gameWebSocketHandler.broadcastRoomReady(message); // 메시지 브로드캐스트
+        }
+    }
+
+    // 라운드 1의 정답을 브로드캐스트 메시지 전송
+    public void handleRound1Answer(GameRoom gameRoom) {
+        if (gameRoom.getRound1Answer()!=null) {
+            String message = "방 번호: " + gameRoom.getRoomId() +"  Round1 정답 위치: " + gameRoom.getRound1Answer();
+            gameWebSocketHandler.broadcastRoomReady(message); // 메시지 브로드캐스트
+        }
+    }
+
+    public void handleRound2Answer(GameRoom gameRoom) {
+        if (gameRoom.getRound2Answer()!=null) {
+            String message = "방 번호: " + gameRoom.getRoomId() +"  Round2 정답 위치: " + gameRoom.getRound2Answer();
+            gameWebSocketHandler.broadcastRoomReady(message); // 메시지 브로드캐스트
+        }
+    }
+
+    public void handleRound3Answer(GameRoom gameRoom) {
+        if (gameRoom.getRound3Answer()!=null) {
+            String message = "방 번호: " + gameRoom.getRoomId() +"  Round3 정답 위치: " + gameRoom.getRound3Answer();
+            gameWebSocketHandler.broadcastRoomReady(message); // 메시지 브로드캐스트
+        }
+    }
+
+    public void handleRound4Answer(GameRoom gameRoom) {
+        if (gameRoom.getRound4Answer()!=null) {
+            String message = "방 번호: " + gameRoom.getRoomId() +"  Round4 정답 위치: " + gameRoom.getRound4Answer();
+            gameWebSocketHandler.broadcastRoomReady(message); // 메시지 브로드캐스트
+        }
+    }
+
+    public void handleRound5Answer(GameRoom gameRoom) {
+        if (gameRoom.getRound5Answer()!=null) {
+            String message = "방 번호: " + gameRoom.getRoomId() +"  Round5 정답 위치: " + gameRoom.getRound5Answer();
             gameWebSocketHandler.broadcastRoomReady(message); // 메시지 브로드캐스트
         }
     }
@@ -64,22 +99,27 @@ public class GameRoomService {
         Random random = new Random();
         int correctAnswer = random.nextInt(maxNumber) + 1; // 1부터 maxNumber 사이의 랜덤 값
 
-        // 정답 위치 DB 저장
+        // 정답 위치 DB 저장 및 정답 위치 브로드캐스트
         if(round==1){
             GameRoom gameRoom = gameRoomOptional.get();
             gameRoom.setRound1Answer(correctAnswer);
+            handleRound1Answer(gameRoom);
         } else if(round==2){
             GameRoom gameRoom = gameRoomOptional.get();
             gameRoom.setRound2Answer(correctAnswer);
+            handleRound2Answer(gameRoom);
         } else if(round==3){
             GameRoom gameRoom = gameRoomOptional.get();
             gameRoom.setRound3Answer(correctAnswer);
+            handleRound3Answer(gameRoom);
         } else if(round==4){
             GameRoom gameRoom = gameRoomOptional.get();
             gameRoom.setRound4Answer(correctAnswer);
+            handleRound4Answer(gameRoom);
         } else if(round==5){
             GameRoom gameRoom = gameRoomOptional.get();
             gameRoom.setRound5Answer(correctAnswer);
+            handleRound5Answer(gameRoom);
         }
 
         GameRoom gameRoom = gameRoomOptional.get();
