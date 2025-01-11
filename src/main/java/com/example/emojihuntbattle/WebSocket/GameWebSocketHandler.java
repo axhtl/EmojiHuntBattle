@@ -26,12 +26,12 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
         String payload = message.getPayload();
         System.out.println("Received message: " + payload);
 
-        // 메시지를 모든 클라이언트에게 브로드캐스트
-        for (WebSocketSession webSocketSession : sessions) {
-            if (webSocketSession.isOpen()) {
-                webSocketSession.sendMessage(new TextMessage("Echo: " + payload));
-            }
-        }
+//        // 메시지를 모든 클라이언트에게 브로드캐스트
+//        for (WebSocketSession webSocketSession : sessions) {
+//            if (webSocketSession.isOpen()) {
+//                webSocketSession.sendMessage(new TextMessage("Echo: " + payload));
+//            }
+//        }
     }
 
     @Override
