@@ -33,11 +33,11 @@ public class ConnectService {
         return gameRoomRepository.save(gameRoom);
     }
 
-    // 방 준비 상태 변경 시 브로드캐스트 메시지 전송
-    public void handleRoomReady(GameRoom gameRoom) {
-        if (gameRoom.isRoomReady()) {
-            String message = "Room " + gameRoom.getRoomId() + " is ready! All players can start the game.";
-            gameWebSocketHandler.broadcastRoomReady(message);
-        }
-    }
+//    // 방 준비 상태 변경 시 브로드캐스트 메시지 전송
+//    public void handleRoomReady(GameRoom gameRoom) {
+//        if (gameRoom.isRoomReady()) {
+//            String message = "Room " + gameRoom.getRoomId() + " is ready! All players can start the game.";
+//            gameWebSocketHandler.broadcastRoomReady(message);
+//        }
+//    }
 }

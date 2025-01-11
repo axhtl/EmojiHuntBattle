@@ -19,6 +19,8 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         sessions.add(session);
         System.out.println("New connection established: " + session.getId());
+        // 로그 추가하여 플레이어가 잘 추가되었는지 확인
+        System.out.println("Total sessions: " + sessions.size());
     }
 
     @Override
@@ -42,12 +44,24 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
 
     // 방 준비 완료 시 모든 클라이언트에 메시지 브로드캐스트
     public void broadcastRoomReady(String message) {
+        System.out.println("Broadcasting message to all clients.");
         for (WebSocketSession session : sessions) {
-            try {
-                session.sendMessage(new org.springframework.web.socket.TextMessage(message));
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (session.isOpen()) {
+                try {
+                    System.out.println("Sending message to session: " + session.getId());
+                    session.sendMessage(new org.springframework.web.socket.TextMessage(message));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                System.out.println("Session " + session.getId() + " is closed.");
             }
+//            try {
+//                session.sendMessage(new org.springframework.web.socket.TextMessage(message));
+//                System.out.println("Sending message to session: " + session.getId()); // 세션 ID 확인
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
         }
     }
 }

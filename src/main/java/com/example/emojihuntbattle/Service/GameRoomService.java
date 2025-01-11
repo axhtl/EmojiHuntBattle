@@ -188,23 +188,23 @@ public class GameRoomService {
         switch (round) {
             case 1:
                 gameRoom.setRound1Answer(correctAnswer);
-                handleRound1Answer(gameRoom);
+//                handleRound1Answer(gameRoom);
                 break;
             case 2:
                 gameRoom.setRound2Answer(correctAnswer);
-                handleRound2Answer(gameRoom);
+//                handleRound2Answer(gameRoom);
                 break;
             case 3:
                 gameRoom.setRound3Answer(correctAnswer);
-                handleRound3Answer(gameRoom);
+//                handleRound3Answer(gameRoom);
                 break;
             case 4:
                 gameRoom.setRound4Answer(correctAnswer);
-                handleRound4Answer(gameRoom);
+//                handleRound4Answer(gameRoom);
                 break;
             case 5:
                 gameRoom.setRound5Answer(correctAnswer);
-                handleRound5Answer(gameRoom);
+//                handleRound5Answer(gameRoom);
                 break;
         }
 
