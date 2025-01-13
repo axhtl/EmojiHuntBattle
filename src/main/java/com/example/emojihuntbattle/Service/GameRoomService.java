@@ -22,7 +22,7 @@ public class GameRoomService {
     public void handleRoomReady(GameRoom gameRoom) {
         // 방이 준비된 상태일 때만 브로드캐스트
         if (gameRoom.isRoomReady()) {
-            String message = "Room " + gameRoom.getRoomId() + " is ready! All players can start the game.";
+            String message = "Room " + gameRoom.getRoomId() + " is ready!";
             gameWebSocketHandler.broadcastRoomReady(message); // 메시지 브로드캐스트
         }
     }

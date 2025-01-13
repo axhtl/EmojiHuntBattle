@@ -5,10 +5,13 @@ import com.example.emojihuntbattle.Domain.Player;
 import com.example.emojihuntbattle.Repository.GameRoomRepository;
 import com.example.emojihuntbattle.Service.ConnectService;
 import com.example.emojihuntbattle.Service.GameRoomService;
+import com.example.emojihuntbattle.WebSocket.GameWebSocketHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,6 +20,7 @@ public class ConnectController {
     private final ConnectService connectService;
     private final GameRoomService gameRoomService;
     private final GameRoomRepository gameRoomRepository;
+    private final GameWebSocketHandler gameWebSocketHandler;
 
     @PostMapping("/connect")
     public GameRoom connectPlayer() {
@@ -53,4 +57,15 @@ public class ConnectController {
 //        // 방 준비 상태에 맞게 브로드캐스트 메시지 처리
 //        gameRoomService.handleRoomReady(gameRoom);
 //    }
+
+    @PostMapping("/broad-room-ready/{roomId}")
+    public void broadRoomReady(@PathVariable Long roomId) {
+        Optional<GameRoom> gameRoom = gameRoomRepository.findById(roomId);
+        if(gameRoom.isPresent()) {
+            if (gameRoom.get().isRoomReady()) {
+                String message = "(모두한테 알림)Room " + gameRoom.get().getRoomId() + " is ready!";
+                gameWebSocketHandler.broadcastRoomReady(message); // 메시지 브로드캐스트
+            }
+        }
+    }
 }

@@ -59,7 +59,7 @@ public class GameRoom {
         // 방 준비 완료 시 WebSocket 메시지 전송
         if (roomReady && webSocketHandler != null) {
             // 준비 완료 메시지 생성
-            String message = "Room " + this.roomId + " is ready! All players can start the game.";
+            String message = "Room " + this.roomId + " is ready!";
             webSocketHandler.broadcastRoomReady(message); // 생성한 메시지를 브로드캐스트
         }
     }
