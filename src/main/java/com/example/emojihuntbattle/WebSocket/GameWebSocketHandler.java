@@ -1,6 +1,7 @@
 package com.example.emojihuntbattle.WebSocket;
 
-import com.example.emojihuntbattle.Domain.GameRoom;
+import com.example.emojihuntbattle.Service.BroadcastMessage;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -44,24 +45,75 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
 
     // 방 준비 완료 시 모든 클라이언트에 메시지 브로드캐스트
     public void broadcastRoomReady(String message) {
-        System.out.println("Broadcasting message to all clients.");
-        for (WebSocketSession session : sessions) {
-            if (session.isOpen()) {
-                try {
-                    System.out.println("Sending message to session: " + session.getId());
-                    session.sendMessage(new org.springframework.web.socket.TextMessage(message));
-                } catch (IOException e) {
-                    e.printStackTrace();
+        // 메시지를 JSON 형식으로 변환
+        try {
+            // ObjectMapper를 사용해 메시지를 JSON 형식으로 변환
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            // 메시지를 JSON으로 변환
+            String jsonMessage = objectMapper.writeValueAsString(new Message(message));
+
+            // 모든 세션에 메시지 전송
+            for (WebSocketSession session : sessions) {
+                if (session.isOpen()) {
+                    try {
+                        System.out.println("Sending message to session: " + session.getId());
+                        session.sendMessage(new TextMessage(jsonMessage)); // JSON 메시지 전송
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    System.out.println("Session " + session.getId() + " is closed.");
                 }
-            } else {
-                System.out.println("Session " + session.getId() + " is closed.");
             }
-//            try {
-//                session.sendMessage(new org.springframework.web.socket.TextMessage(message));
-//                System.out.println("Sending message to session: " + session.getId()); // 세션 ID 확인
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
-}
+
+        public void broadcastAnswerPosition(Long gameRoomId, int round, int answerPosition) {
+            System.out.println("Broadcasting message to all clients.");
+
+            // 메시지 객체 생성
+            BroadcastMessage message = new BroadcastMessage(gameRoomId, round, answerPosition);
+
+            // 메시지를 JSON 형식으로 변환
+            try {
+                // ObjectMapper를 사용해 메시지를 JSON 형식으로 변환
+                ObjectMapper objectMapper = new ObjectMapper();
+
+                // 메시지를 JSON으로 변환
+                String jsonMessage = objectMapper.writeValueAsString(message);
+
+                // 모든 세션에 메시지 전송
+                for (WebSocketSession session : sessions) {
+                    if (session.isOpen()) {
+                        try {
+                            System.out.println("Sending message to session: " + session.getId());
+                            session.sendMessage(new TextMessage(jsonMessage)); // JSON 메시지 전송
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        System.out.println("Session " + session.getId() + " is closed.");
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+//        System.out.println("Broadcasting message to all clients.");
+//        for (WebSocketSession session : sessions) {
+//            if (session.isOpen()) {
+//                try {
+//                    System.out.println("Sending message to session: " + session.getId());
+//                    session.sendMessage(new org.springframework.web.socket.TextMessage(message));
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            } else {
+//                System.out.println("Session " + session.getId() + " is closed.");
+//            }
+//        }
+    }

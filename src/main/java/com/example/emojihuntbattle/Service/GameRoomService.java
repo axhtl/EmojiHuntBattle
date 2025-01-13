@@ -4,12 +4,20 @@ import com.example.emojihuntbattle.Domain.GameRoom;
 import com.example.emojihuntbattle.Repository.GameRoomRepository;
 import com.example.emojihuntbattle.WebSocket.GameWebSocketHandler;
 import lombok.RequiredArgsConstructor;
+import org.aspectj.weaver.Lint;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +25,7 @@ public class GameRoomService {
 
     private final GameRoomRepository gameRoomRepository;
     private final GameWebSocketHandler gameWebSocketHandler;
+    private final ApplicationEventPublisher eventPublisher;
 
     // 방 준비 상태 변경 시 브로드캐스트 메시지 전송
     public void handleRoomReady(GameRoom gameRoom) {
@@ -60,6 +69,156 @@ public class GameRoomService {
         if (gameRoom.getRound5Answer()!=null) {
             String message = "방 번호: " + gameRoom.getRoomId() +"  Round5 정답 위치: " + gameRoom.getRound5Answer();
             gameWebSocketHandler.broadcastRoomReady(message); // 메시지 브로드캐스트
+        }
+    }
+
+    @Transactional
+    public void broadAnswerAfter3seconds(GameRoom gameRoom, int startingRound) {
+        RestTemplate restTemplate = new RestTemplate();
+        Long roomId = gameRoom.getRoomId();
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+        // 각 라운드별 랜덤 정답 위치 지정
+        int answerPosition = getRandomAnswerPosition(startingRound);
+
+        scheduler.scheduleAtFixedRate(new Runnable() {
+            private int currentRound = startingRound;
+
+            @Override
+            public void run() {
+                if (currentRound > 5) {
+                    scheduler.shutdown();
+                    return;
+                }
+
+                try {
+                    switch (currentRound) {
+                        case 1 -> {
+                            int answerPosition = getRandomAnswerPosition(currentRound);
+                            Long gameRoomId = gameRoom.getRoomId();
+                            int round = currentRound;
+                            gameWebSocketHandler.broadcastAnswerPosition(gameRoomId,round,answerPosition);
+                        }
+                        case 2 -> {
+                            int answerPosition = getRandomAnswerPosition(currentRound);
+                            Long gameRoomId = gameRoom.getRoomId();
+                            int round = currentRound;
+                            gameWebSocketHandler.broadcastAnswerPosition(gameRoomId,round,answerPosition);
+                        }
+                        case 3 -> {
+                            int answerPosition = getRandomAnswerPosition(currentRound);
+                            Long gameRoomId = gameRoom.getRoomId();
+                            int round = currentRound;
+                            gameWebSocketHandler.broadcastAnswerPosition(gameRoomId,round,answerPosition);
+                        }
+                        case 4 -> {
+                            int answerPosition = getRandomAnswerPosition(currentRound);
+                            Long gameRoomId = gameRoom.getRoomId();
+                            int round = currentRound;
+                            gameWebSocketHandler.broadcastAnswerPosition(gameRoomId,round,answerPosition);
+                        }
+                        case 5 -> {
+                            int answerPosition = getRandomAnswerPosition(currentRound);
+                            Long gameRoomId = gameRoom.getRoomId();
+                            int round = currentRound;
+                            gameWebSocketHandler.broadcastAnswerPosition(gameRoomId,round,answerPosition);
+                        }
+                    }
+
+                    currentRound++;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    scheduler.shutdown(); // 오류 발생 시 스케줄러 종료
+                }
+            }
+        }, 0, 3, TimeUnit.SECONDS); // 0초 후 시작, 이후 3초 간격으로 실행
+    }
+
+    // 라운드별 랜덤 정답 위치를 결정하는 메서드
+    private int getRandomAnswerPosition(int round) {
+        Random random = new Random();
+        int answerPosition = 0;
+
+        switch (round) {
+            case 1:
+                answerPosition = random.nextInt(4) + 1; // 1 ~ 4 범위
+                break;
+            case 2:
+                answerPosition = random.nextInt(9) + 1; // 1 ~ 9 범위
+                break;
+            case 3:
+                answerPosition = random.nextInt(16) + 1; // 1 ~ 16 범위
+                break;
+            case 4:
+            case 5:
+                answerPosition = random.nextInt(25) + 1; // 1 ~ 25 범위
+                break;
+        }
+
+        return answerPosition;
+    }
+
+
+
+
+
+
+//    public void broadAnswerAfter3seconds(GameRoom gameRoom, int startingRound) {
+//        RestTemplate restTemplate = new RestTemplate();
+//        Long roomId = gameRoom.getRoomId();
+//
+//        // 새로운 스레드에서 순차적으로 라운드 진행
+//        new Thread(() -> {
+//            try {
+//                for (int round = startingRound; round <= 5; round++) {
+//                    switch (round) {
+//                        case 1 -> {
+//                            callNextRoundApi(restTemplate, roomId, 1);
+//                            Thread.sleep(10000);
+//                            handleRound1Answer(gameRoom);
+//                        }
+//                        case 2 -> {
+//                            callNextRoundApi(restTemplate, roomId, 2);
+//                            Thread.sleep(10000);
+//                            handleRound2Answer(gameRoom);
+//                        }
+//                        case 3 -> {
+//                            callNextRoundApi(restTemplate, roomId, 3);
+//                            Thread.sleep(10000);
+//                            handleRound3Answer(gameRoom);
+//                        }
+//                        case 4 -> {
+//                            callNextRoundApi(restTemplate, roomId, 4);
+//                            Thread.sleep(10000);
+//                            handleRound4Answer(gameRoom);
+//                        }
+//                        case 5 -> {
+//                            callNextRoundApi(restTemplate, roomId, 5);
+//                            Thread.sleep(10000);
+//                            handleRound5Answer(gameRoom);
+//                        }
+//                    }
+//
+//                    // 3초 대기
+//                    if (round < 5) {
+//                        Thread.sleep(3000);
+//                    }
+//                }
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }).start();
+//    }
+
+    private void callNextRoundApi(RestTemplate restTemplate, Long roomId, int round) {
+        try {
+            String apiUrl = "http://localhost:8080/rooms/" + roomId + "/next-round?round=" + round;
+            ResponseEntity<Map> response = restTemplate.getForEntity(apiUrl, Map.class);
+
+            // API 호출 결과 로그 출력
+            System.out.println("라운드 " + round + " API 호출 성공: " + response.getBody());
+        } catch (Exception e) {
+            System.err.println("라운드 " + round + " API 호출 실패: " + e.getMessage());
         }
     }
 

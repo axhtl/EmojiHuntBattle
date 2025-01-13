@@ -44,4 +44,10 @@ public class GameRoomController {
             gameRoomService.handleRound5Answer(gameRoom);
         }
     }
+
+    @PostMapping("broad-answer-after-3seconds/{roomId}")
+    public void broadAnswerAfter3seconds(@PathVariable Long roomId, @RequestParam int round) {
+        GameRoom gameRoom = gameRoomRepository.findById(roomId).get();
+        gameRoomService.broadAnswerAfter3seconds(gameRoom,round);
+    }
 }
